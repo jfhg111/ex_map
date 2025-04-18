@@ -1,3 +1,12 @@
+function setViewportHeight() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+window.addEventListener('load', setViewportHeight);
+window.addEventListener('resize', setViewportHeight);
+window.addEventListener('orientationchange', setViewportHeight);
+
 const sheetUrl = "https://opensheet.elk.sh/1ZTUWQ7A1WOKYwz4jz5Q09JaxKwdP-cZ_tK8EnupkMMI";
 const pointsUrl = `${sheetUrl}/points`;
 const legendUrl = `${sheetUrl}/legend`;
@@ -246,6 +255,9 @@ window.addEventListener("DOMContentLoaded", () => {
     panzoomElem.parentElement.addEventListener(evt, showLegendTemporarily);
   });
 });
+
+window.addEventListener('scroll', setViewportHeight);
+window.addEventListener('touchend', setViewportHeight);
 
 ["gesturestart", "gesturechange", "gestureend"].forEach(evt =>
   document.addEventListener(evt, e => e.preventDefault())
