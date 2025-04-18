@@ -85,7 +85,25 @@ function renderPoints(pointsData) {
 
     point.addEventListener("mouseenter", (e) => {
       const rect = e.target.getBoundingClientRect();
-    
+      const frame = document.querySelector('.frame');
+      const frameRect = frame.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+
+      let tooltipX = rect.left + rect.width / 2;
+      let tooltipY = rect.top - 10 - tooltip.offsetHeight;
+
+      if (tooltipX + tooltip.offsetWidth > frameRect.right) {
+        tooltipX = frameRect.right - tooltip.offsetWidth - 8;
+      }
+      if (tooltipX < frameRect.left) {
+        tooltipX = frameRect.left + 8;
+      }
+      if (tooltipY < frameRect.top) {
+        tooltipY = rect.bottom + 10;
+      }
+
+      tooltip.style.left = `${tooltipX}px`;
+      tooltip.style.top = `${tooltipY}px`;
       tooltip.innerHTML = `
         <div class="tip-title">${item.label}</div>
         <div class="tip-desc">${item.desc}</div>
@@ -93,10 +111,6 @@ function renderPoints(pointsData) {
         <div class="tip-time"><span class="tip-sem">📚 학기 중:</span> ${item.sem_time}</div>
         <div class="tip-time"><span class="tip-vac">🏖 방학 중:</span> ${item.vac_time}</div>
       `;
-    
-      // 툴팁이 포인트의 위쪽에 표시되도록 조정
-      tooltip.style.left = `${rect.left + rect.width / 2}px`;
-      tooltip.style.top = `${rect.top - 10 - tooltip.offsetHeight}px`; // 위쪽 10px 여유
     
       tooltip.style.opacity = 1;
     });
@@ -109,7 +123,25 @@ function renderPoints(pointsData) {
       e.preventDefault(); // prevent touch scrolling
       
       const rect = e.target.getBoundingClientRect();
+      const frame = document.querySelector('.frame');
+      const frameRect = frame.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
       
+      let tooltipX = rect.left + rect.width / 2;
+      let tooltipY = rect.top - 10 - tooltip.offsetHeight;
+
+      if (tooltipX + tooltip.offsetWidth > frameRect.right) {
+        tooltipX = frameRect.right - tooltip.offsetWidth - 8;
+      }
+      if (tooltipX < frameRect.left) {
+        tooltipX = frameRect.left + 8;
+      }
+      if (tooltipY < frameRect.top) {
+        tooltipY = rect.bottom + 10;
+      }
+
+      tooltip.style.left = `${tooltipX}px`;
+      tooltip.style.top = `${tooltipY}px`;
       tooltip.innerHTML = `
         <div class="tip-title">${item.label}</div>
         <div class="tip-desc">${item.desc}</div>
@@ -118,15 +150,31 @@ function renderPoints(pointsData) {
         <div class="tip-time"><span class="tip-vac">🏖 방학 중:</span> ${item.vac_time}</span></div>
       `;
       
-      tooltip.style.left = `${rect.left + rect.width / 2}px`;
-      tooltip.style.top = `${rect.top - 10 - tooltip.offsetHeight}px`;
       tooltip.style.opacity = 1;
     });
 
     point.addEventListener("touchstart", (e) => {
       e.stopPropagation(); // 다른 touchstart와 충돌 방지
       const rect = e.target.getBoundingClientRect();
+      const frame = document.querySelector('.frame');
+      const frameRect = frame.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
     
+      let tooltipX = rect.left + rect.width / 2;
+      let tooltipY = rect.top - 10 - tooltip.offsetHeight;
+
+      if (tooltipX + tooltip.offsetWidth > frameRect.right) {
+        tooltipX = frameRect.right - tooltip.offsetWidth - 8;
+      }
+      if (tooltipX < frameRect.left) {
+        tooltipX = frameRect.left + 8;
+      }
+      if (tooltipY < frameRect.top) {
+        tooltipY = rect.bottom + 10;
+      }
+    
+      tooltip.style.left = `${tooltipX}px`;
+      tooltip.style.top = `${tooltipY}px`;
       tooltip.innerHTML = `
         <div class="tip-title">${item.label}</div>
         <div class="tip-desc">${item.desc}</div>
@@ -135,8 +183,6 @@ function renderPoints(pointsData) {
         <div class="tip-time"><span class="tip-vac">🏖 방학 중:</span> ${item.vac_time}</div>
       `;
     
-      tooltip.style.left = `${rect.left + rect.width / 2}px`;
-      tooltip.style.top = `${rect.top - 10 - tooltip.offsetHeight}px`;
       tooltip.style.opacity = 1;
     });
 
@@ -167,9 +213,7 @@ window.addEventListener("DOMContentLoaded", () => {
   if (!panzoomElem) return;
 
   const panzoom = Panzoom(panzoomElem, {
-    maxScale: 3,
-    minScale: 1,
-    contain: "outside"
+    maxScale: 10
   });
 
   panzoomElem.parentElement.addEventListener("wheel", panzoom.zoomWithWheel);
