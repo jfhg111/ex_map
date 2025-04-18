@@ -7,17 +7,24 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="map-header">
-    <h1>화성오산 늘봄자원지도</h1>
-  </header>
+  <div class="frame">
+    
+    <header class="map-header">
+      <h1>화성오산 늘봄자원지도</h1>
+    </header>
 
-  <div class="map-container">
-    <img src="map.jpg" alt="지도 이미지" id="map-image" />
-    <div id="points-layer"></div>
-    <div id="legend" class="map-legend hidden"></div>
-    <div id="tooltip" class="tooltip"></div>
+    <div class="map-container">
+      <div class="pan-zoom-wrapper">
+        <div class="pan-zoom-area">
+          <img src="map.jpg" alt="지도 이미지" id="map-image" />
+          <div id="points-layer"></div>
+        </div>
+      </div>
+      <div id="legend" class="map-legend"></div>
+      <div id="tooltip" class="tooltip"></div>
+    </div>
+
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
