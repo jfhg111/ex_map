@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>지도 예시</title>
+
+  <!-- 스타일 지정: 팝업 설명창(툴팁)의 디자인 설정 -->
+  <style>
+    .tooltip {
+      position: absolute; /* 화면 위에서 위치를 자유롭게 지정 가능 */
+      background: #fff;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      pointer-events: none; /* 마우스로 클릭되지 않게 설정 */
+      opacity: 0; /* 기본은 안 보이게 숨김 */
+      transition: opacity 0.2s ease-in-out; /* 부드럽게 나타나게 */
+    }
+
+    /* SVG 위에 올라갈 원(circle) 모양에 마우스 커서가 손 모양으로 보이게 설정 */
+    svg circle {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 실제 지도로 쓸 SVG 파일을 불러오는 부분 -->
+  <!-- id="map"으로 불러온 뒤에 JavaScript에서 제어함 -->
+  <object id="map" type="image/svg+xml" data="ex_map_background.svg"></object>
+
+  <!-- 마우스를 올렸을 때 설명이 표시되는 창 (툴팁) -->
+  <div id="tooltip" class="tooltip"></div>
+
+  <!-- 실제 동작을 만드는 JavaScript 코드 -->
+  <script>
+    // 구글 스프레드시트 데이터를 JSON 형식으로 불러오는 주소
+    const sheetUrl = "https://opensheet.elk.sh/1ZTUWQ7A1WOKYwz4jz5Q09JaxKwdP-cZ_tK8EnupkMMI/points";
+
+    // fetch()를 통해 JSON 데이터를 불러옴
+    fetch(sheetUrl)
+      .then(res => res.json())  // 데이터를 JSON으로 변환
+      .then(data => {
+        
+        console.log("스프레드시트 데이터:", data);
+        
+        const svgObject = document.getElementById('map');  // SVG 객체 불러오기
+
+        // SVG 파일이 다 불러졌을 때 실행할 함수
+        svgObject.addEventListener('load', () => {
+          const svgDoc = svgObject.contentDocument;  // SVG 내부 문서 접근
+          const svgRoot = svgDoc.querySelector('svg');  // <svg> 태그 찾기
+            console.log("✅ svgRoot 확인:", svgRoot);
+          const tooltip = document.getElementById('tooltip');  // 툴팁 요소 불러오기
+
+          // 스프레드시트의 각 데이터 행을 반복 처리
+          data.forEach(item => {
+            // 시트에 입력된 값들 가져오기
+            const shape = item.모양.toLowerCase();  // 도형 종류 (circle, rect 등)
+            const color = item.색상값;  // 색상 (예: red, #00FF00 등)
+            const x = parseFloat(item.x좌표);  // X 좌표 (숫자)
+            const y = parseFloat(item.y좌표);  // Y 좌표 (숫자)
+            const 설명제목 = item.설명제목 || '';  // 툴팁 제목
+            const 설명내용 = item.설명내용 || '';  // 툴팁 내용
+
+            let el;  // SVG 위에 올릴 도형 요소
+
+            // 원(circle) 도형일 경우
+            if (shape === 'circle') {
+              el = svgDoc.createElementNS("http://www.w3.org/2000/svg", "circle");
+              el.setAttribute("r", 50);  // 반지름을 10으로 고정
+              el.setAttribute("cx", x);  // 원의 중심 x 좌표
+              el.setAttribute("cy", y);  // 원의 중심 y 좌표
+            }
+            // 네모(rect) 도형일 경우
+            else if (shape === 'rect') {
+              el = svgDoc.createElementNS("http://www.w3.org/2000/svg", "rect");
+              el.setAttribute("width", 20);   // 가로 20px
+              el.setAttribute("height", 20);  // 세로 20px
+              el.setAttribute("x", x - 10);   // 정중앙 위치를 위해 보정
+              el.setAttribute("y", y - 10);
+            }
+
+            el.setAttribute("fill", color);  // 도형의 색상 설정
+
+            // 마우스를 올렸을 때 툴팁 표시
+            el.addEventListener("mousemove", (e) => {
+              tooltip.style.left = e.clientX + 10 + "px";  // 마우스 위치 기준 좌측 +10px
+              tooltip.style.top = e.clientY + 10 + "px";   // 마우스 위치 기준 위 +10px
+              tooltip.innerHTML = `<strong>${설명제목}</strong><br>${설명내용}`;
+              tooltip.style.opacity = 1;  // 툴팁 보이기
+            });
+
+            // 마우스를 뗐을 때 툴팁 숨기기
+            el.addEventListener("mouseout", () => {
+              tooltip.style.opacity = 0;
+            });
+
+            // 완성된 도형을 SVG 위에 추가
+            svgRoot.appendChild(el); 
+          });
+        });
+      });
+  </script>
+  <circle cx="1500" cy="1300" r="200" fill="red" />
+</body>
+</html>
