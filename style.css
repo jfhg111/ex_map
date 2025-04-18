@@ -6,33 +6,46 @@ body {
   justify-content: center;
   align-items: start;
   min-height: 100vh;
+  font-family:'Pretendard', sans-serif;
 }
 
 .frame {
-  width: 390px;         /* ✅ iPhone 12~15 기준 */
-  height: 844px;
+  width: 100vh;
+  max-width: 500px;
+  height: 100vh;
   background: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
-  border-radius: 12px;
-  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .map-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 12px;
+  padding-bottom: 12px;
   position: sticky;
   top: 0;
   width: 100%;
   background: white;
-  padding: 10px;
-  text-align: center;
   font-weight: bold;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   z-index: 1000;
+  text-align: center;
 }
+
+.map-title {
+  font-size: 18px;
+}
+
 .map-container {
-  padding-top: 60px;
   position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 #map-image {
   width: 100%;
@@ -60,36 +73,95 @@ body {
   transform-origin: center;
 }
 .tooltip {
-  position: absolute;
+  position: fixed;
   background: #fff;
   border: 1px solid #ccc;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 10px;
+  border-radius: 8px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s;
-  z-index: 1000;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 2000; /* 높여줍니다 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 13px;
+  max-width: 240px;
+  line-height: 1.4;
+  transform: translateY(-8px);
 }
+
+.tooltip.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tooltip .tip-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.tooltip .tip-desc {
+  font-size: 13px;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.tooltip .tip-phone {
+  font-size: 13px;
+  color: #007BFF;
+  margin-bottom: 4px;
+}
+
+.tooltip .tip-time {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 2px;
+}
+
+.tooltip .tip-sem {
+  font-weight: 500;
+  color: #28a745;
+}
+
+.tooltip .tip-vac {
+  font-weight: 500;
+  color: #e83e8c;
+}
+
 .map-legend {
   position: absolute;
-  bottom: -200px;
-  left: 0;
-  width: 100%;
+  bottom: -120px; /* slide completely out */
   background: white;
   padding: 10px;
-  text-align: left; /* 왼쪽 정렬로 바꾸면 더 읽기 쉬움 */
+  text-align: left;
   border-top: 1px solid #ccc;
   transition: bottom 0.3s ease-in-out;
   z-index: 50;
-
   display: flex;
-  flex-wrap: wrap;           /* ✅ 여러 줄로 나누기 */
-  gap: 8px 12px;             /* ✅ 줄 간격과 열 간격 */
+  flex-wrap: wrap;
+  gap: 8px 12px;
   font-size: 14px;
   justify-content: center;
+  width: 100%;
+}
+.map-legend.show {
+  bottom: 0;
 }
 .map-legend span {
   display: flex;
   align-items: center;
   white-space: nowrap;
+}
+.pan-zoom-area {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.pan-zoom-wrapper {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
 }

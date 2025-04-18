@@ -1,6 +1,7 @@
 const sheetUrl = "https://opensheet.elk.sh/1ZTUWQ7A1WOKYwz4jz5Q09JaxKwdP-cZ_tK8EnupkMMI";
 const pointsUrl = `${sheetUrl}/points`;
 const legendUrl = `${sheetUrl}/legend`;
+const titleUrl = `${sheetUrl}/title`;
 
 console.log("✅ script.js loaded");
 
@@ -68,22 +69,62 @@ function renderPoints(pointsData) {
     point.className = "point";
     point.style.left = `${x * scaleX}px`;
     point.style.top = `${y * scaleY}px`;
-    point.style.width = "16px";
-    point.style.height = "16px";
-    point.style.backgroundColor = legend.color;
-    point.style.borderRadius = legend.shape === "circle" ? "50%" : "0";
+    point.style.width = "24px";
+    point.style.height = "24px";
+    point.style.backgroundColor = "transparent";
+    point.style.color = legend.color;
+    point.style.fontSize = "27px";
+    point.style.display = "flex";
+    point.style.justifyContent = "center";
+    point.style.alignItems = "center";
+    point.style.lineHeight = "24px";
+    point.style.backgroundColor = "rgba(0, 0, 0, 0.001)";
+    point.textContent = legend.shape;
+    point.style.pointerEvents = "auto";
+    point.style.zIndex = "100";
 
-    point.addEventListener("click", (e) => {
+    point.addEventListener("mouseenter", (e) => {
+      const rect = e.target.getBoundingClientRect();
+    
       tooltip.innerHTML = `
-        <strong>${item.label}</strong><br>
-        ${item.desc}<br>
-        📞 ${item.phone}<br>
-        📚 학기 중: ${item.sem_time}<br>
-        🏖 방학 중: ${item.vac_time}
+        <div class="tip-title">${item.label}</div>
+        <div class="tip-desc">${item.desc}</div>
+        <div class="tip-phone">📞 ${item.phone}</div>
+        <div class="tip-time"><span class="tip-sem">📚 학기 중:</span> ${item.sem_time}</div>
+        <div class="tip-time"><span class="tip-vac">🏖 방학 중:</span> ${item.vac_time}</div>
       `;
-      tooltip.style.left = e.clientX + "px";
-      tooltip.style.top = e.clientY + "px";
+    
+      // 툴팁이 포인트의 위쪽에 표시되도록 조정
+      tooltip.style.left = `${rect.left + rect.width / 2}px`;
+      tooltip.style.top = `${rect.top - 10 - tooltip.offsetHeight}px`; // 위쪽 10px 여유
+    
       tooltip.style.opacity = 1;
+    });
+
+    point.addEventListener("mouseleave", () => {
+      tooltip.style.opacity = 0;
+    });
+    
+    point.addEventListener("touchstart", (e) => {
+      e.preventDefault(); // prevent touch scrolling
+      
+      const rect = e.target.getBoundingClientRect();
+      
+      tooltip.innerHTML = `
+        <div class="tip-title">${item.label}</div>
+        <div class="tip-desc">${item.desc}</div>
+        <div class="tip-phone">📞 ${item.phone}</div>
+        <div class="tip-time"><span class="tip-sem">📚 학기 중:</span> ${item.sem_time}</div>
+        <div class="tip-time"><span class="tip-vac">🏖 방학 중:</span> ${item.vac_time}</span></div>
+      `;
+      
+      tooltip.style.left = `${rect.left + rect.width / 2}px`;
+      tooltip.style.top = `${rect.top - 10 - tooltip.offsetHeight}px`;
+      tooltip.style.opacity = 1;
+    });
+    
+    point.addEventListener("touchend", () => {
+      tooltip.style.opacity = 0;
     });
 
     layer.appendChild(point);
@@ -101,9 +142,60 @@ function renderPoints(pointsData) {
   // console.log("🟣 테스트 포인트 추가됨");
 }
 
-document.addEventListener("mousedown", () => {
-  document.getElementById("legend").classList.add("show");
+
+// 확대/이동 기능 초기화
+window.addEventListener("DOMContentLoaded", () => {
+  console.log("🔧 DOMContentLoaded triggered");
+  const panzoomElem = document.querySelector(".pan-zoom-area");
+  if (!panzoomElem) return;
+
+  const panzoom = Panzoom(panzoomElem, {
+    maxScale: 3,
+    minScale: 1,
+    contain: "outside"
+  });
+
+  panzoomElem.parentElement.addEventListener("wheel", panzoom.zoomWithWheel);
+
+  // 확대 시 포인트 크기 유지
+  panzoomElem.addEventListener("panzoomchange", () => {
+    const scale = panzoom.getScale();
+    document.querySelectorAll(".point").forEach(point => {
+      point.style.setProperty("--zoom", scale);
+    });
+  });
+  
+  const legend = document.querySelector(".map-legend");
+  if (legend) {
+    legend.classList.remove("show");
+  }
+  
+  let hideTimeout;
+  function showLegendTemporarily() {
+    if (!legend) return;
+    console.log("📌 범례 표시 트리거됨");
+    legend.classList.add("show");
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(() => {
+      legend.classList.remove("show");
+    }, 1000);
+  }
+
+  ["wheel", "mousedown", "mousemove", "touchstart", "touchmove"].forEach(evt => {
+    panzoomElem.parentElement.addEventListener(evt, showLegendTemporarily);
+  });
 });
-document.addEventListener("mouseup", () => {
-  document.getElementById("legend").classList.remove("show");
-});
+
+["gesturestart", "gesturechange", "gestureend"].forEach(evt =>
+  document.addEventListener(evt, e => e.preventDefault())
+);
+
+fetch(titleUrl)
+  .then(res => res.json())
+  .then(data => {
+    if (data.length > 0 && data[0].title) {
+      const titleEl = document.querySelector('.map-title');
+      if (titleEl) titleEl.textContent = data[0].title;
+    }
+  })
+  .catch(err => console.error("🔴 title fetch error:", err));
