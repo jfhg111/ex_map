@@ -1,0 +1,60 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+.map-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: white;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+.map-container {
+  padding-top: 60px;
+  position: relative;
+}
+#map-image {
+  display: block;
+  width: 100%;
+}
+#points-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.point {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+.tooltip {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 1000;
+}
+.map-legend {
+  position: fixed;
+  bottom: -200px;
+  left: 0;
+  width: 100%;
+  background: white;
+  padding: 10px;
+  text-align: center;
+  border-top: 1px solid #ccc;
+  transition: bottom 0.3s ease-in-out;
+}
+.map-legend.show {
+  bottom: 0;
+}
