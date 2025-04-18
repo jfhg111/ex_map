@@ -122,10 +122,27 @@ function renderPoints(pointsData) {
       tooltip.style.top = `${rect.top - 10 - tooltip.offsetHeight}px`;
       tooltip.style.opacity = 1;
     });
+
+    point.addEventListener("touchstart", (e) => {
+      e.stopPropagation(); // 다른 touchstart와 충돌 방지
+      const rect = e.target.getBoundingClientRect();
     
-    point.addEventListener("touchend", () => {
-      tooltip.style.opacity = 0;
+      tooltip.innerHTML = `
+        <div class="tip-title">${item.label}</div>
+        <div class="tip-desc">${item.desc}</div>
+        <div class="tip-phone">📞 ${item.phone}</div>
+        <div class="tip-time"><span class="tip-sem">📚 학기 중:</span> ${item.sem_time}</div>
+        <div class="tip-time"><span class="tip-vac">🏖 방학 중:</span> ${item.vac_time}</div>
+      `;
+    
+      tooltip.style.left = `${rect.left + rect.width / 2}px`;
+      tooltip.style.top = `${rect.top - 10 - tooltip.offsetHeight}px`;
+      tooltip.style.opacity = 1;
     });
+
+    document.addEventListener("touchstart", () => {
+      tooltip.style.opacity = 0;
+    }, { passive: true });
 
     layer.appendChild(point);
   });
